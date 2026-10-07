@@ -1,0 +1,31 @@
+services:
+  metabase:
+    image: metabase/metabase:latest
+    container_name: metabase
+    restart: unless-stopped
+    environment:
+      # Gunakan PostgreSQL untuk menyimpan metadata Metabase
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: postgres
+      MB_DB_PASS: password
+      MB_DB_HOST: postgres-db
+      # Optional: Java timezone
+      JAVA_TIMEZONE: Asia/Jakarta
+    ports:
+      - "3001:3000"    # Metabase web UI (port 3000 sudah dipakai mysql-workbench)
+    volumes:
+      - /home/titan/database-docker/metabase:/metabase-data
+    networks:
+      - docker-compose_default
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+networks:
+  docker-compose_default:
+    external: true
